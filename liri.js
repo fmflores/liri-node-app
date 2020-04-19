@@ -59,7 +59,7 @@ async function spotifyThis(){
             if (err) {
               return console.log('Error occurred: ' + err);
             }
-            console.log(data.tracks.items[0].artists[0].name);
+            console.log(`\nArtist: ${data.tracks.items[0].artists[0].name}\nSong Name: ${data.tracks.items[0].name}\nPreview Song: ${data.tracks.items[0].preview_url}\nAlbum: ${data.tracks.items[0].album.name}`);
             })
     } else {
         spotify.search({ type: 'track', query: song }, function(err, data) {
@@ -84,9 +84,11 @@ async function spotifyThis(){
 async function movieThis() {
     const {movie} = await prompt({message: "Please enter movie title", name: 'movie'});
 
-    const {data} = await axios.get(`http://www.omdbapi.com/?apikey=trilogy&t=${movie}`);
-
-    //console.log(data);
+    if (movie === "") {
+        const {data} = await axios.get(`http://www.omdbapi.com/?apikey=trilogy&t=Mr.+Nobody`);
+        console.log(`\nMovie Title: ${data.Title}\nYear: ${data.Year}\nIMDB Rating: ${data.Ratings[0].Value}\nRotten Tomatoes Rating: ${data.Ratings[1].Value}\nCountry: ${data.Country}\nLanguage: ${data.Language}\nPlot: ${data.Plot}\nActors: ${data.Actors}`);
+    } else {
+        const {data} = await axios.get(`http://www.omdbapi.com/?apikey=trilogy&t=${movie}`);
 
     const title = data.Title;
     const year = data.Year;
@@ -98,6 +100,22 @@ async function movieThis() {
     const actors = data.Actors;
 
     console.log(`\nMovie Title: ${title}\nYear: ${year}\nIMDB Rating: ${rating}\nRotten Tomatoes Rating: ${rotRating}\nCountry: ${country}\nLanguage: ${language}\nPlot: ${plot}\nActors: ${actors}`);
+    }
 }
+
+async function doWhatItSays() {
+    fs.readFile("random.txt", "utf8", function(error, data){
+        var functions = data.split(",");
+
+        if (functions[0] === "spotify-this-song") {
+            spotifyThis();
+        } else if (functions[0] === "movie-this") {
+            movieThis();
+        } else if (functions[0] === "concert-this") {
+            concertThis();
+        }
+    })
+}
+
 
 init();
