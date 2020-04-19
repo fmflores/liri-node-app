@@ -50,8 +50,23 @@ async function concertThis(){
     
 }
 
-async function spotifyThis() {
-    const{song} = await prompt({message: "Please enter song title", name: 'song'})
+async function spotifyThis(){
+    const {song} = await prompt({message: "Please enter song name", name: 'song'});
+    //api call here
+    spotify.search({ type: 'track', query: song }, function(err, data) {
+        if (err) {
+          return console.log('Error occurred: ' + err);
+        }
+
+        for (var i = 0; i < data.tracks.items.length; i++) {
+            const songName = data.tracks.items[i].name;
+            const preview = data.tracks.items[i].preview_url;
+            const album = data.tracks.items[i].album.name;
+
+            console.log(`\nSong Name: ${songName}\nPreview Song: ${preview}\nAlbum: ${album}`);
+        }
+    
+ })
 }
 
 init();
